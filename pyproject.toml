@@ -7,6 +7,8 @@ name = "witness-receipts"
 version = "0.2.0"
 description = "Offline verification of signed Witness receipts for Cornerstone ledgers."
 readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
 requires-python = ">=3.11"
 dependencies = [
     "cryptography>=42",
