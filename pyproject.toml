@@ -1,0 +1,31 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "witness-receipts"
+version = "0.1.0"
+description = "Offline verification of signed Witness receipts for Cornerstone ledgers."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "cryptography>=42",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Topic :: Security :: Cryptography",
+    "Topic :: Software Development :: Quality Assurance",
+]
+
+[project.scripts]
+witness = "witness_cli.cli:entrypoint"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/witness_cli"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

@@ -1,0 +1,31 @@
+{
+  "receipt_version": "witness.receipt/0.1",
+  "signature": {
+    "algorithm": "ed25519",
+    "value": "cCZwqrOTJJ-4Vkn1P20gR27NJwSz8dDndDFQ8qaZbIzpe9kV906F0nysnJePTouk7iKX5H64Uh_W2LUjSYNHBQ"
+  },
+  "signed": {
+    "authority": {
+      "id": "witness.test",
+      "key_id": "ed25519:65b60673d6ed884bf01c2c222d82ada0740f29ac3355d6a925c81f17f47a27b8"
+    },
+    "log_index": 1,
+    "receipt_id": "01ARZ3NDEKTSV4RRFFQ69G5FAW",
+    "received_at": "2026-07-18T12:00:00Z",
+    "statement": {
+      "artifact": {
+        "byte_scope": "entire-file-including-final-newline",
+        "digest": {
+          "algorithm": "sha256",
+          "value": "eeb163873b7a68a19ce2b5eb974ba5968b491c8e9135b25ed749bce60e14c90d"
+        },
+        "media_type": "application/vnd.cornerstone.ledger+jsonl"
+      },
+      "statement_version": "witness.statement/0.1",
+      "subject": {
+        "session_id": "01ARZ3NDEKTSV4RRFFQ69G5FAV",
+        "spec_version": "cornerstone/0.1"
+      }
+    }
+  }
+}

@@ -13,7 +13,7 @@
           "const": "ed25519"
         },
         "value": {
-          "pattern": "^[A-Za-z0-9_-]{86}$",
+          "pattern": "^[A-Za-z0-9_-]{85}[AQgw]$",
           "type": "string"
         }
       },
