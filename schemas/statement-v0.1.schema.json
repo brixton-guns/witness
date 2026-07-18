@@ -1,0 +1,68 @@
+{
+  "$id": "https://witness.invalid/schemas/statement-v0.1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "artifact": {
+      "additionalProperties": false,
+      "properties": {
+        "byte_scope": {
+          "const": "entire-file-including-final-newline"
+        },
+        "digest": {
+          "additionalProperties": false,
+          "properties": {
+            "algorithm": {
+              "const": "sha256"
+            },
+            "value": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "algorithm",
+            "value"
+          ],
+          "type": "object"
+        },
+        "media_type": {
+          "const": "application/vnd.cornerstone.ledger+jsonl"
+        }
+      },
+      "required": [
+        "byte_scope",
+        "digest",
+        "media_type"
+      ],
+      "type": "object"
+    },
+    "statement_version": {
+      "const": "witness.statement/0.1"
+    },
+    "subject": {
+      "additionalProperties": false,
+      "properties": {
+        "session_id": {
+          "pattern": "^[0-9A-HJKMNP-TV-Z]{26}$",
+          "type": "string"
+        },
+        "spec_version": {
+          "const": "cornerstone/0.1"
+        }
+      },
+      "required": [
+        "session_id",
+        "spec_version"
+      ],
+      "type": "object"
+    }
+  },
+  "required": [
+    "artifact",
+    "statement_version",
+    "subject"
+  ],
+  "title": "Witness statement v0.1",
+  "type": "object"
+}

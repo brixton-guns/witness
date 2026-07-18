@@ -1,0 +1,2 @@
+{"actor":"test-vector","command":["true"],"id":"01ARZ3NDEKTSV4RRFFQ69G5FAV","prev":"0000000000000000000000000000000000000000000000000000000000000000","spec":"0.1","ts":"2026-07-18T11:59:59Z","type":"session.started"}
+{"duration_s":0.0,"exit_code":0,"outcome":"success","prev":"c521b763b4cdab0c2fe3afab2421e2825d0904809899134bbb1b6a0ee2ae8392","ts":"2026-07-18T12:00:00Z","type":"session.finished"}
