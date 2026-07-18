@@ -31,3 +31,15 @@ class ArtifactMismatchError(WitnessError):
     """The supplied ledger does not match the signed artifact digest."""
 
     exit_code = 5
+
+
+class IdempotencyConflictError(WitnessError):
+    """An idempotency key was reused with a different statement (spec §9)."""
+
+    exit_code = 6
+
+
+class SubmissionError(WitnessError):
+    """The authority rejected a submission or cannot be reached."""
+
+    exit_code = 6

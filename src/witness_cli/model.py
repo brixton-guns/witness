@@ -10,6 +10,7 @@ from typing import Any
 from .errors import ReceiptValidationError
 
 MAX_RECEIPT_BYTES = 128 * 1024
+MAX_STATEMENT_BYTES = 16 * 1024
 MAX_SAFE_INTEGER = 9_007_199_254_740_991
 
 _HEX_64 = re.compile(r"^[0-9a-f]{64}$")
@@ -40,20 +41,33 @@ def _reject_non_json_constant(value: str) -> None:
     raise ValueError(f"non-JSON numeric constant: {value}")
 
 
-def parse_receipt_bytes(raw: bytes) -> dict[str, Any]:
-    """Decode strict UTF-8 JSON, rejecting duplicate keys and non-JSON constants."""
-    if len(raw) > MAX_RECEIPT_BYTES:
-        raise ReceiptValidationError(f"receipt exceeds {MAX_RECEIPT_BYTES} bytes")
+def _parse_strict_json(raw: bytes, label: str) -> Any:
     try:
         text = raw.decode("utf-8")
-        document = json.loads(
+        return json.loads(
             text,
             object_pairs_hook=_reject_duplicate_keys,
             parse_constant=_reject_non_json_constant,
         )
     except (UnicodeDecodeError, json.JSONDecodeError, _DuplicateKey, ValueError) as exc:
-        raise ReceiptValidationError(f"receipt is not strict UTF-8 JSON: {exc}") from exc
+        raise ReceiptValidationError(f"{label} is not strict UTF-8 JSON: {exc}") from exc
+
+
+def parse_receipt_bytes(raw: bytes) -> dict[str, Any]:
+    """Decode strict UTF-8 JSON, rejecting duplicate keys and non-JSON constants."""
+    if len(raw) > MAX_RECEIPT_BYTES:
+        raise ReceiptValidationError(f"receipt exceeds {MAX_RECEIPT_BYTES} bytes")
+    document = _parse_strict_json(raw, "receipt")
     validate_receipt(document)
+    return document
+
+
+def parse_statement_bytes(raw: bytes) -> dict[str, Any]:
+    """Decode and validate a standalone v0.1 statement (the authority's request body)."""
+    if len(raw) > MAX_STATEMENT_BYTES:
+        raise ReceiptValidationError(f"statement exceeds {MAX_STATEMENT_BYTES} bytes")
+    document = _parse_strict_json(raw, "statement")
+    validate_statement(document, "statement")
     return document
 
 
@@ -88,40 +102,41 @@ def _pattern(value: Any, pattern: re.Pattern[str], path: str) -> str:
     return text
 
 
-def _validate_statement(value: Any) -> None:
-    statement = _object(value, "signed.statement", {"artifact", "statement_version", "subject"})
-    _const(statement["statement_version"], "witness.statement/0.1", "signed.statement.statement_version")
+def validate_statement(value: Any, path: str = "statement") -> None:
+    """Validate a v0.1 statement, standalone or embedded in a signed payload."""
+    statement = _object(value, path, {"artifact", "statement_version", "subject"})
+    _const(statement["statement_version"], "witness.statement/0.1", f"{path}.statement_version")
 
     artifact = _object(
         statement["artifact"],
-        "signed.statement.artifact",
+        f"{path}.artifact",
         {"byte_scope", "digest", "media_type"},
     )
     _const(
         artifact["byte_scope"],
         "entire-file-including-final-newline",
-        "signed.statement.artifact.byte_scope",
+        f"{path}.artifact.byte_scope",
     )
     _const(
         artifact["media_type"],
         "application/vnd.cornerstone.ledger+jsonl",
-        "signed.statement.artifact.media_type",
+        f"{path}.artifact.media_type",
     )
     digest = _object(
         artifact["digest"],
-        "signed.statement.artifact.digest",
+        f"{path}.artifact.digest",
         {"algorithm", "value"},
     )
-    _const(digest["algorithm"], "sha256", "signed.statement.artifact.digest.algorithm")
-    _pattern(digest["value"], _HEX_64, "signed.statement.artifact.digest.value")
+    _const(digest["algorithm"], "sha256", f"{path}.artifact.digest.algorithm")
+    _pattern(digest["value"], _HEX_64, f"{path}.artifact.digest.value")
 
     subject = _object(
         statement["subject"],
-        "signed.statement.subject",
+        f"{path}.subject",
         {"session_id", "spec_version"},
     )
-    _pattern(subject["session_id"], _ULID, "signed.statement.subject.session_id")
-    _const(subject["spec_version"], "cornerstone/0.1", "signed.statement.subject.spec_version")
+    _pattern(subject["session_id"], _ULID, f"{path}.subject.session_id")
+    _const(subject["spec_version"], "cornerstone/0.1", f"{path}.subject.spec_version")
 
 
 def validate_receipt(value: Any) -> None:
@@ -157,4 +172,4 @@ def validate_receipt(value: Any) -> None:
     except ValueError as exc:
         raise ReceiptValidationError("receipt.signed.received_at is not a real UTC date") from exc
 
-    _validate_statement(signed["statement"])
+    validate_statement(signed["statement"], "signed.statement")
