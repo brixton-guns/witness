@@ -102,10 +102,22 @@ def _pattern(value: Any, pattern: re.Pattern[str], path: str) -> str:
     return text
 
 
+# Each statement version admits a closed set of Cornerstone spec versions.
+# Agility lives in version bumps, never in negotiable fields.
+STATEMENT_VERSIONS = {
+    "witness.statement/0.1": ("cornerstone/0.1",),
+    "witness.statement/0.2": ("cornerstone/0.1", "cornerstone/0.2"),
+}
+
+
 def validate_statement(value: Any, path: str = "statement") -> None:
-    """Validate a v0.1 statement, standalone or embedded in a signed payload."""
+    """Validate a statement, standalone or embedded, per its declared version."""
     statement = _object(value, path, {"artifact", "statement_version", "subject"})
-    _const(statement["statement_version"], "witness.statement/0.1", f"{path}.statement_version")
+    version = _string(statement["statement_version"], f"{path}.statement_version")
+    if version not in STATEMENT_VERSIONS:
+        raise ReceiptValidationError(
+            f"{path}.statement_version must be one of: {', '.join(sorted(STATEMENT_VERSIONS))}"
+        )
 
     artifact = _object(
         statement["artifact"],
@@ -136,7 +148,12 @@ def validate_statement(value: Any, path: str = "statement") -> None:
         {"session_id", "spec_version"},
     )
     _pattern(subject["session_id"], _ULID, f"{path}.subject.session_id")
-    _const(subject["spec_version"], "cornerstone/0.1", f"{path}.subject.spec_version")
+    allowed_specs = STATEMENT_VERSIONS[version]
+    spec_version = _string(subject["spec_version"], f"{path}.subject.spec_version")
+    if spec_version not in allowed_specs:
+        raise ReceiptValidationError(
+            f"{path}.subject.spec_version must be one of: {', '.join(allowed_specs)}"
+        )
 
 
 def validate_receipt(value: Any) -> None:

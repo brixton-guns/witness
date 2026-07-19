@@ -29,8 +29,8 @@ verifier enforces before it is committed or returned.
 
 The repository contains:
 
-- [`WITNESS_SPEC_v0.1.md`](WITNESS_SPEC_v0.1.md)
-- [`schemas/statement-v0.1.schema.json`](schemas/statement-v0.1.schema.json)
+- [`WITNESS_SPEC_v0.1.md`](WITNESS_SPEC_v0.1.md) and the [`WITNESS_SPEC_v0.2.md`](WITNESS_SPEC_v0.2.md) delta (statement v0.2 for Cornerstone spec 0.2 ledgers)
+- [`schemas/statement-v0.1.schema.json`](schemas/statement-v0.1.schema.json) and [`schemas/statement-v0.2.schema.json`](schemas/statement-v0.2.schema.json)
 - [`schemas/receipt-v0.1.schema.json`](schemas/receipt-v0.1.schema.json)
 - [`test-vectors/vector-v0.1.json`](test-vectors/vector-v0.1.json)
 - [`test-vectors/sample-events.jsonl`](test-vectors/sample-events.jsonl)
