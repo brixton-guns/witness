@@ -10,6 +10,7 @@ readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
 requires-python = ">=3.11"
+keywords = ["attestation", "audit", "ed25519", "provenance", "receipts"]
 dependencies = [
     "cryptography>=42",
 ]
